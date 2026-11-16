@@ -2,7 +2,7 @@ import type { LinkType, Meeting, Thread, TrailItem, Workspace } from '../types'
 
 export const L = {
   laneLabelW: 216,
-  headerH: 116,
+  headerH: 104,
   colW: 306,
   cardW: 236,
   cardH: 104,

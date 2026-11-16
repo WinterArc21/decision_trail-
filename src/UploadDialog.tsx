@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useRef, useState } from 'react'
-import { Check, Cpu, FileText, KeyRound, LoaderCircle, Sparkles, Upload, X } from 'lucide-react'
+import { Check, KeyRound, LoaderCircle, Upload, X } from 'lucide-react'
 import type { Engine, Meeting, Workspace } from './types'
 import { parseTranscript, speakersOf, formatTimestamp } from './lib/transcript'
 import { extractHeuristic } from './lib/extract/heuristic'
@@ -86,7 +86,7 @@ export function UploadDialog({ ws, onClose, onDone }: Props) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/25 p-4 backdrop-blur-[3px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/20 p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -97,7 +97,7 @@ export function UploadDialog({ ws, onClose, onDone }: Props) {
         animate={{ y: 0, scale: 1, opacity: 1 }}
         exit={{ y: 10, scale: 0.98, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 400, damping: 34 }}
-        className="relative w-full max-w-[600px] overflow-hidden rounded-2xl border border-line bg-white shadow-[0_30px_80px_-24px_rgba(29,42,48,0.45)]"
+        className="relative w-full max-w-[600px] overflow-hidden rounded-xl border border-line bg-white shadow-[0_24px_60px_-28px_rgba(29,42,48,0.45)]"
       >
         <div className="flex items-start justify-between px-6 pb-1 pt-5">
           <div>
@@ -114,10 +114,9 @@ export function UploadDialog({ ws, onClose, onDone }: Props) {
         <AnimatePresence mode="wait" initial={false}>
           {phase.name === 'running' ? (
             <motion.div key="run" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="px-6 pb-7 pt-5">
-              <div className="rounded-xl border border-line bg-paper/60 p-5">
+              <div className="rounded-lg border border-line p-5">
                 <div className="mb-4 flex items-center gap-2 text-[13px] text-ink-2">
-                  <FileText className="size-4" />
-                  <span className="font-medium text-ink">{title}</span>
+                                    <span className="font-medium text-ink">{title}</span>
                   <span className="text-ink-3">
                     · {lines.length} lines · {speakers.length} speakers
                   </span>
@@ -130,11 +129,9 @@ export function UploadDialog({ ws, onClose, onDone }: Props) {
                       <li key={s} className={`flex items-center gap-3 text-[14px] transition-colors ${done || active ? 'text-ink' : 'text-ink-3'}`}>
                         <span className="flex size-5 items-center justify-center">
                           {done ? (
-                            <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex size-5 items-center justify-center rounded-full bg-resolve text-white">
-                              <Check className="size-3" strokeWidth={3} />
-                            </motion.span>
+                            <Check className="size-4 text-resolve" strokeWidth={2.5} />
                           ) : active ? (
-                            <LoaderCircle className={`size-4 animate-spin ${engine === 'claude' && i === 1 ? 'text-violet' : 'text-decision'}`} />
+                            <LoaderCircle className={`size-4 animate-spin text-ink-2`} />
                           ) : (
                             <span className="size-1.5 rounded-full bg-ink/20" />
                           )}
@@ -149,7 +146,7 @@ export function UploadDialog({ ws, onClose, onDone }: Props) {
           ) : (
             <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 px-6 pb-6 pt-4">
               {phase.name === 'error' && (
-                <div className="rounded-xl border border-blocker/25 bg-blocker/[0.06] p-3.5 text-[13px] text-ink">
+                <div className="rounded-lg border border-line p-3.5 text-[13px] text-ink">
                   <div className="font-semibold text-blocker">Extraction failed</div>
                   <div className="mt-0.5 text-ink-2">{phase.message}</div>
                   <button onClick={() => run('on-device')} className="mt-2 font-medium text-decision hover:underline">
@@ -239,14 +236,12 @@ export function UploadDialog({ ws, onClose, onDone }: Props) {
                   <EngineOption
                     active={engine === 'claude'}
                     onClick={() => setEngine('claude')}
-                    icon={<Sparkles className="size-4 text-violet" />}
                     title="Claude"
                     detail="Best quality. Uses your API key."
                   />
                   <EngineOption
                     active={engine === 'on-device'}
                     onClick={() => setEngine('on-device')}
-                    icon={<Cpu className="size-4 text-ink-2" />}
                     title="On-device"
                     detail="No key. Rule-based, runs in your browser."
                   />
@@ -277,9 +272,9 @@ export function UploadDialog({ ws, onClose, onDone }: Props) {
                 <button
                   disabled={!ready}
                   onClick={() => run(engine)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-ink px-4 py-2 text-[13.5px] font-semibold text-white shadow-sm transition-all hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-35"
+                  className="rounded-md bg-ink px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-ink/85 disabled:cursor-not-allowed disabled:opacity-35"
                 >
-                  <Sparkles className="size-4" /> Find decisions
+                  Find decisions
                 </button>
               </div>
             </motion.div>
@@ -290,15 +285,17 @@ export function UploadDialog({ ws, onClose, onDone }: Props) {
   )
 }
 
-function EngineOption(p: { active: boolean; onClick: () => void; icon: React.ReactNode; title: string; detail: string }) {
+function EngineOption(p: { active: boolean; onClick: () => void; title: string; detail: string }) {
   return (
     <button
       onClick={p.onClick}
-      className={`flex items-start gap-2.5 rounded-xl border p-3 text-left transition-all ${p.active ? 'border-ink/60 bg-paper/50 shadow-[0_0_0_3px_rgba(29,42,48,0.06)]' : 'border-line hover:border-ink/25'}`}
+      className={`flex items-start gap-2.5 rounded-lg border p-3 text-left transition-colors ${p.active ? 'border-ink' : 'border-line hover:border-ink/30'}`}
     >
-      <span className="mt-0.5">{p.icon}</span>
+      <span className={`mt-[3px] flex size-3.5 shrink-0 items-center justify-center rounded-full border ${p.active ? 'border-ink' : 'border-ink/30'}`}>
+        {p.active && <span className="size-1.5 rounded-full bg-ink" />}
+      </span>
       <span>
-        <span className="block text-[13.5px] font-semibold">{p.title}</span>
+        <span className="block text-[13.5px] font-medium">{p.title}</span>
         <span className="block text-[12px] leading-snug text-ink-3">{p.detail}</span>
       </span>
     </button>

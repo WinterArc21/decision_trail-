@@ -38,7 +38,7 @@ body {
 
 .canvas-bg {
   background-color: var(--color-paper);
-  background-image: radial-gradient(circle at 1px 1px, rgb(29 42 48 / 0.075) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgb(29 42 48 / 0.05) 1px, transparent 0);
   background-size: 22px 22px;
 }
 
@@ -58,13 +58,4 @@ body {
 }
 .thin-scroll::-webkit-scrollbar-track {
   background: transparent;
-}
-
-@keyframes dash-flow {
-  to {
-    stroke-dashoffset: -20;
-  }
-}
-.edge-flow {
-  animation: dash-flow 1.2s linear infinite;
 }

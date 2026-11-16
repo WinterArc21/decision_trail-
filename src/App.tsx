@@ -1,13 +1,13 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowRight, MousePointer2, Plus, RotateCcw, Sparkles } from 'lucide-react'
+import { ArrowRight, Plus, RotateCcw } from 'lucide-react'
 import type { ItemKind, Workspace } from './types'
 import { sampleWorkspace } from './data/workspace'
 import { computeLayout, edgesOf, statusesOf, trailOf } from './lib/graph'
 import { Canvas } from './Canvas'
 import { Panel, type Selection } from './Panel'
 import { UploadDialog } from './UploadDialog'
-import { KIND, LINK, Logo } from './ui'
+import { KIND, KindMark, LINK, Logo } from './ui'
 
 const STORAGE = 'decision-trails.added.v1'
 
@@ -86,14 +86,14 @@ export default function App() {
 
   return (
     <div className="flex h-full flex-col">
-      <header className="relative z-40 flex h-14 shrink-0 items-center gap-4 border-b border-line bg-white/80 px-5 backdrop-blur-md">
+      <header className="relative z-40 flex h-14 shrink-0 items-center gap-4 border-b border-line bg-white px-5">
         <div className="flex items-center gap-2.5">
           <Logo size={28} />
           <span className="text-[15px] font-semibold tracking-[-0.01em]">Decision Trails</span>
-          <span className="hidden rounded-full border border-line px-2 py-0.5 text-[11px] font-medium text-ink-3 md:inline">Concept for Fellow</span>
+          <span className="hidden text-[13px] text-ink-3 md:inline">· a concept for Fellow</span>
         </div>
 
-        <div className="mx-auto flex items-center rounded-xl bg-paper p-1" role="tablist" aria-label="Filter by type">
+        <div className="mx-auto flex items-center gap-1" role="tablist" aria-label="Filter by type">
           {FILTERS.map((f) => {
             const active = filter === f
             return (
@@ -102,13 +102,13 @@ export default function App() {
                 role="tab"
                 aria-selected={active}
                 onClick={() => setFilter(f)}
-                className={`relative rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition-colors ${active ? 'text-ink' : 'text-ink-3 hover:text-ink-2'}`}
+                className={`relative rounded-md px-2.5 py-1.5 text-[13px] font-medium transition-colors ${active ? 'text-ink' : 'text-ink-3 hover:text-ink-2'}`}
               >
                 {active && (
-                  <motion.span layoutId="filter-pill" className="absolute inset-0 rounded-lg bg-white shadow-[0_1px_3px_rgba(29,42,48,0.12)]" transition={{ type: 'spring', stiffness: 500, damping: 38 }} />
+                  <motion.span layoutId="filter-pill" className="absolute inset-0 rounded-md bg-paper-2" transition={{ type: 'spring', stiffness: 500, damping: 40 }} />
                 )}
                 <span className="relative flex items-center gap-1.5">
-                  {f !== 'all' && <span className="size-1.5 rounded-full" style={{ background: KIND[f].color }} />}
+                  {f !== 'all' && <KindMark kind={f} size={6} />}
                   {f === 'all' ? 'All' : `${KIND[f].label}s`}
                   <span className="tabular-nums text-ink-3">{counts[f]}</span>
                 </span>
@@ -128,14 +128,14 @@ export default function App() {
                 setFound(null)
               }}
               title="Remove added meetings"
-              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-medium text-ink-3 hover:bg-paper hover:text-ink"
+              className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-ink-3 hover:bg-paper hover:text-ink"
             >
               <RotateCcw className="size-3.5" /> Reset
             </button>
           )}
           <button
             onClick={() => setUploading(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-ink px-3.5 py-2 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-ink/90"
+            className="inline-flex items-center gap-1.5 rounded-md bg-ink px-3 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-ink/85"
           >
             <Plus className="size-4" /> Add meeting
           </button>
@@ -163,21 +163,7 @@ export default function App() {
           onBackground={() => setSelection(null)}
         />
 
-        <Legend />
-
-        <AnimatePresence>
-          {!explored && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 1.6 } }}
-              exit={{ opacity: 0, y: 8 }}
-              className="pointer-events-none absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-ink px-4 py-2 text-[12.5px] text-white/90 shadow-lg"
-            >
-              <MousePointer2 className="size-3.5" />
-              Hover a card to trace how a decision evolved. Click it to see the source.
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Legend hint={!explored} />
 
         <AnimatePresence>
           {found && !selection && (
@@ -190,12 +176,11 @@ export default function App() {
                 select({ type: 'meeting', id: found.meetingId })
                 setFound(null)
               }}
-              className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-ink py-2 pl-4 pr-3 text-[12.5px] text-white shadow-lg transition-colors hover:bg-ink/90"
+              className="absolute bottom-14 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 rounded-lg border border-line bg-white px-4 py-2.5 text-[13px] text-ink-2 shadow-[0_8px_24px_-12px_rgba(29,42,48,0.3)]"
             >
-              <Sparkles className="size-3.5 text-[#b9a6ff]" />
               Found {found.count} item{found.count === 1 ? '' : 's'} in {found.title}
-              <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 font-medium">
-                Review <ArrowRight className="size-3" />
+              <span className="inline-flex items-center gap-1 font-medium text-decision">
+                Review <ArrowRight className="size-3.5" />
               </span>
             </motion.button>
           )}
@@ -228,18 +213,32 @@ export default function App() {
   )
 }
 
-function Legend() {
+function Legend({ hint }: { hint: boolean }) {
   return (
-    <div className="pointer-events-none absolute bottom-4 left-4 z-30 flex items-center gap-4 rounded-xl border border-line bg-white/90 px-3.5 py-2 text-[11.5px] text-ink-2 shadow-sm backdrop-blur">
+    <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-30 flex items-center gap-5 border-t border-line bg-paper px-7 py-2.5 text-[12px] text-ink-3">
+      {(Object.keys(KIND) as ItemKind[]).map((k) => (
+        <span key={k} className="flex items-center gap-1.5">
+          <KindMark kind={k} size={6} />
+          {KIND[k].label}
+        </span>
+      ))}
+      <span className="h-3 w-px bg-line" />
       {Object.entries(LINK).map(([type, l]) => (
         <span key={type} className="flex items-center gap-1.5">
-          <svg width="18" height="8" aria-hidden>
-            <line x1="1" y1="4" x2="13" y2="4" stroke={l.color} strokeWidth="1.8" strokeLinecap="round" />
-            <path d="M12 1 L17 4 L12 7 z" fill={l.color} />
+          <svg width="16" height="8" aria-hidden>
+            <line x1="1" y1="4" x2="11" y2="4" stroke={l.color} strokeWidth="1.6" strokeLinecap="round" />
+            <path d="M10 1.5 L15 4 L10 6.5 z" fill={l.color} />
           </svg>
           {l.label}
         </span>
       ))}
+      <AnimatePresence>
+        {hint && (
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1, transition: { delay: 1 } }} exit={{ opacity: 0 }} className="ml-auto">
+            Hover a card to trace its history. Click it to read the source.
+          </motion.span>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
