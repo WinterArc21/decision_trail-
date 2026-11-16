@@ -1,0 +1,70 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource/gelasio/500.css";
+@import "@fontsource/gelasio/600.css";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Gelasio", ui-serif, Georgia, serif;
+
+  --color-ink: #1d2a30;
+  --color-ink-2: #4a585f;
+  --color-ink-3: #87949a;
+  --color-paper: #f6f5f2;
+  --color-paper-2: #efeee9;
+  --color-line: #e5e2da;
+
+  --color-decision: #0b7a88;
+  --color-blocker: #df4a4f;
+  --color-change: #c77a0a;
+  --color-resolve: #15936a;
+  --color-violet: #6a3df0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+.canvas-bg {
+  background-color: var(--color-paper);
+  background-image: radial-gradient(circle at 1px 1px, rgb(29 42 48 / 0.075) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.thin-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: rgb(29 42 48 / 0.12);
+  border-radius: 99px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+.edge-flow {
+  animation: dash-flow 1.2s linear infinite;
+}
